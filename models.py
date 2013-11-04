@@ -77,6 +77,12 @@ class HMM(ModelGibbsSampling, ModelEM, ModelMAPEM):
         self.states_list.append(self._states_class(model=self,data=data,
             stateseq=stateseq,**kwargs))
 
+    def heldout_viterbi(self,data,**kwargs):
+        self.add_data(data=data,stateseq=np.zeros(len(data)),**kwargs)
+        s = self.states_list.pop()
+        s.Viterbi()
+        return s.stateseq
+
     def log_likelihood(self,data=None,**kwargs):
         if data is not None:
             self.add_data(data=data,stateseq=np.zeros(len(data)),**kwargs)

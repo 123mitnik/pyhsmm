@@ -33,6 +33,7 @@ truemodel = pyhsmm.models.HSMM(alpha=6.,gamma=6.,init_state_concentration=6.,
                               dur_distns=true_dur_distns)
 
 data, labels = truemodel.generate(T)
+test_data, test_labels = truemodel.generate(T//5)
 
 plt.figure()
 truemodel.plot()
@@ -61,5 +62,9 @@ posteriormodel.Viterbi_EM_fit()
 plt.figure()
 posteriormodel.plot()
 plt.gcf().suptitle('Viterbi fit')
+
+predicted_stateseq = posteriormodel.heldout_viterbi(test_data)
+
+plt.matshow(np.vstack((test_labels,predicted_stateseq)))
 
 plt.show()
