@@ -77,10 +77,10 @@ class HMM(ModelGibbsSampling, ModelEM, ModelMAPEM):
         self.states_list.append(self._states_class(model=self,data=data,
             stateseq=stateseq,**kwargs))
 
-    def log_likelihood(self,data=None):
+    def log_likelihood(self,data=None,**kwargs):
         if data is not None:
-            s = self._states_class(model=self,data=np.asarray(data),
-                    stateseq=np.zeros(len(data))) # placeholder
+            self.add_data(data=data,stateseq=np.zeros(len(data)),**kwargs)
+            s = self.states_list.pop()
             betal = s.messages_backwards()
             return np.logaddexp.reduce(np.log(self.init_state_distn.pi_0) + betal[0] + s.aBl[0])
         else:
@@ -462,8 +462,8 @@ class HSMM(HMM, ModelGibbsSampling, ModelEM, ModelMAPEM):
     def log_likelihood(self,data=None,trunc=None,**kwargs):
         # NOTE: this only works with iid emissions
         if data is not None:
-            s = self._states_class(model=self,data=np.asarray(data),trunc=trunc,
-                    stateseq=np.zeros(len(data)),**kwargs)
+            self.add_data(data=data,trunc=trunc,stateseq=np.zeros(len(data)),**kwargs)
+            s = self.states_list.pop()
             betal, _ = s.messages_backwards()
             return np.logaddexp.reduce(np.log(s.pi_0) + betal[0] + s.aBl[0])
         else:
@@ -593,8 +593,8 @@ class _HSMMIntNegBinBase(HSMM, HMMEigen):
 
     def log_likelihood(self,data=None,**kwargs):
         if data is not None:
-            s = self._states_class(model=self,data=np.asarray(data),
-                    stateseq=np.zeros(len(data)),**kwargs) # stateseq b/c forward gen is slow
+            self.add_data(data=data,stateseq=np.zeros(len(data)),**kwargs)
+            s = self.states_list.pop()
             return np.logaddexp.reduce(np.log(s.pi_0) + s.messages_backwards()[0][0] + s.aBl[0])
         else:
             if hasattr(self,'_last_resample_used_temp') and self._last_resample_used_temp:
