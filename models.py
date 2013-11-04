@@ -83,6 +83,15 @@ class HMM(ModelGibbsSampling, ModelEM, ModelMAPEM):
         s.Viterbi()
         return s.stateseq
 
+    def heldout_state_marginals(self,data,**kwargs):
+        self.add_data(data=data,stateseq=np.zeros(len(data)),**kwargs)
+        s = self.states_list.pop()
+        log_margs = s.messages_forwards() + s.messages_backwards()
+        log_margs -= log_margs.max(1)[:,None]
+        margs = np.exp(log_margs)
+        margs /= margs.sum(1)[:,None]
+        return margs
+
     def log_likelihood(self,data=None,**kwargs):
         if data is not None:
             self.add_data(data=data,stateseq=np.zeros(len(data)),**kwargs)
