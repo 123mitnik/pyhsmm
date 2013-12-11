@@ -268,7 +268,7 @@ class HMM(ModelGibbsSampling, ModelEM, ModelMAPEM):
 
     def _get_parallel_kwargss(self,states_objs):
         # this method is broken out so that it can be overridden
-        return None
+        return [{}]*len(states_objs)
 
     @staticmethod
     @util.general.engine_global_namespace # access to engine globals
