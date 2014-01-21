@@ -479,14 +479,13 @@ class HSMM(HMM, ModelGibbsSampling, ModelEM, ModelMAPEM):
         if data is not None:
             self.add_data(data=data,trunc=trunc,stateseq=np.zeros(len(data)),**kwargs)
             s = self.states_list.pop()
-            betal, _ = s.messages_backwards()
-            return np.logaddexp.reduce(np.log(s.pi_0) + betal[0] + s.aBl[0])
+            _, betastarl = s.messages_backwards()
+            return np.logaddexp.reduce(np.log(s.pi_0) + betastarl[0])
         else:
             if hasattr(self,'_last_resample_used_temp') and self._last_resample_used_temp:
                 self._clear_caches()
             initials = np.vstack([
-                s.messages_backwards()[0][0] + np.log(s.pi_0) + s.aBl[0]
-                for s in self.states_list])
+                s.messages_backwards()[1][0] + np.log(s.pi_0) for s in self.states_list])
             return np.logaddexp.reduce(initials,axis=1).sum()
 
     ### generation
