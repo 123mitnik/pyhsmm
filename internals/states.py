@@ -467,7 +467,7 @@ class HSMMStatesPython(HMMStatesPython):
 
         for t in xrange(T-1,-1,-1):
             np.logaddexp.reduce(betal[t:t+trunc] + self.cumulative_likelihoods(t,t+trunc) + aDl[:min(trunc,T-t)],axis=0, out=betastarl[t])
-            if T-t < trunc and self.right_censoring:
+            if T-t-1 < trunc and self.right_censoring:
                 np.logaddexp(betastarl[t], self.likelihood_block(t,None) + aDsl[T-t -1], betastarl[t])
             np.logaddexp.reduce(betastarl[t] + Al,axis=1,out=betal[t-1])
         betal[-1] = 0.
